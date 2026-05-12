@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f4ede1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Card Picker">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>The Card Concierge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=DM+Sans:opsz,wght@9..40,300..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410;
+    --ink-soft: #4a3e34;
+    --ink-faint: #8a7e72;
+    --paper: #f4ede1;
+    --paper-deep: #ebe2d2;
+    --paper-edge: #d9cdb7;
+    --gold: #b8945a;
+    --gold-deep: #8c6b3a;
+    --burgundy: #6b2a2a;
+    --forest: #2d4a3e;
+    --cream-panel: #fcf8ef;
+    --shadow: 0 1px 0 rgba(26, 20, 16, 0.04), 0 8px 32px -12px rgba(26, 20, 16, 0.12);
+    --shadow-lift: 0 1px 0 rgba(26, 20, 16, 0.04), 0 16px 48px -16px rgba(26, 20, 16, 0.22);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.5;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Paper grain texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+
+  /* Warm vignette */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at top, transparent 0%, transparent 50%, rgba(160, 120, 70, 0.06) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Header — editorial masthead */
+  header {
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 14px 0 12px;
+    margin-bottom: 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    bottom: -4px;
+    height: 1px;
+    background: var(--ink);
+  }
+  .masthead {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(28px, 7vw, 44px);
+    font-variation-settings: 'opsz' 144, 'SOFT' 30, 'WONK' 1;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .masthead em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--burgundy);
+    font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;
+  }
+  .edition {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    text-align: right;
+    line-height: 1.4;
+  }
+  .edition .vol { color: var(--gold-deep); }
+
+  /* Deck — kicker line */
+  .deck {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(15px, 4vw, 18px);
+    color: var(--ink-soft);
+    line-height: 1.45;
+    margin-bottom: 32px;
+    max-width: 560px;
+    font-variation-settings: 'opsz' 24, 'SOFT' 50;
+  }
+
+  /* Search */
+  .search-section {
+    margin-bottom: 28px;
+  }
+  .label-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .label-bar .line {
+    flex: 1;
+    height: 1px;
+    background: var(--ink);
+    opacity: 0.15;
+  }
+  .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--gold-deep);
+    font-weight: 500;
+  }
+  .label .num {
+    color: var(--ink-faint);
+    margin-right: 6px;
+  }
+
+  .search-wrap {
+    position: relative;
+  }
+  .search {
+    width: 100%;
+    background: var(--cream-panel);
+    border: 1px solid var(--paper-edge);
+    color: var(--ink);
+    padding: 18px 20px 18px 50px;
+    border-radius: 2px;
+    font-size: 17px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    outline: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+  }
+  .search:focus {
+    border-color: var(--ink);
+    background: #fff;
+  }
+  .search::placeholder {
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+  .search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold-deep);
+    pointer-events: none;
+  }
+
+  /* Category grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--paper-edge);
+    border: 1px solid var(--paper-edge);
+    margin-bottom: 36px;
+    box-shadow: var(--shadow);
+  }
+  .cat-btn {
+    background: var(--cream-panel);
+    border: none;
+    color: var(--ink);
+    padding: 16px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    text-align: left;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    min-height: 60px;
+    letter-spacing: -0.01em;
+  }
+  .cat-btn:hover {
+    background: #fff;
+    color: var(--burgundy);
+  }
+  .cat-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .cat-btn.active .cat-icon {
+    filter: grayscale(0.2) brightness(1.1);
+  }
+  .cat-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  /* Result — editorial spread */
+  .result {
+    background: var(--cream-panel);
+    border: 1px solid var(--paper-edge);
+    padding: 36px 28px 32px;
+    position: relative;
+    box-shadow: var(--shadow-lift);
+    min-height: 280px;
+  }
+  .result::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--gold);
+  }
+  .result.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--ink-faint);
+    padding: 60px 24px;
+  }
+  .empty-mark {
+    font-family: 'Fraunces', serif;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--paper-edge);
+    margin-bottom: 12px;
+    font-weight: 300;
+    font-style: italic;
+  }
+  .empty-text {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-faint);
+    font-weight: 300;
+  }
+
+  .pick-kicker {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 14px;
+    animation: slideIn 0.4s ease both;
+  }
+  .pick-kicker .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--gold-deep);
+    letter-spacing: 0.15em;
+    font-weight: 600;
+  }
+  .pick-kicker .text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+  }
+
+  .pick-card {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(30px, 7vw, 42px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 18px;
+    font-variation-settings: 'opsz' 144, 'SOFT' 20;
+    animation: slideIn 0.5s 0.05s ease both;
+  }
+
+  .pick-rate-row {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 12px 0;
+    border-top: 1px solid var(--paper-edge);
+    border-bottom: 1px solid var(--paper-edge);
+    margin-bottom: 22px;
+    animation: slideIn 0.5s 0.1s ease both;
+  }
+  .pick-rate {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--forest);
+    letter-spacing: -0.01em;
+    font-variation-settings: 'opsz' 36;
+  }
+  .pick-rate-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-left: auto;
+  }
+
+  .pick-reason {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink);
+    margin-bottom: 24px;
+    font-variation-settings: 'opsz' 24, 'SOFT' 30;
+    animation: slideIn 0.5s 0.15s ease both;
+  }
+  .pick-reason::first-letter {
+    font-family: 'Fraunces', serif;
+    font-size: 2.4em;
+    font-weight: 700;
+    float: left;
+    line-height: 0.85;
+    margin: 0.06em 0.08em 0 -0.02em;
+    color: var(--burgundy);
+    font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 1;
+  }
+
+  .caveat {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(184, 148, 90, 0.1);
+    border-left: 2px solid var(--gold);
+    margin-bottom: 22px;
+    animation: slideIn 0.5s 0.2s ease both;
+  }
+  .caveat-mark {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--gold-deep);
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+  .caveat-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  .alt-section {
+    margin-top: 8px;
+    animation: slideIn 0.5s 0.25s ease both;
+  }
+  .alt-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .alt-header .line {
+    flex: 1;
+    height: 1px;
+    background: var(--paper-edge);
+  }
+  .alt-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--gold-deep);
+  }
+  .alt-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 11px 0;
+    border-bottom: 1px dotted var(--paper-edge);
+    gap: 16px;
+  }
+  .alt-item:last-child { border-bottom: none; }
+  .alt-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .alt-rate {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-align: right;
+    flex-shrink: 0;
+    letter-spacing: -0.01em;
+  }
+
+  /* Footer */
+  .colophon {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--paper-edge);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .colophon .ornament {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    color: var(--gold);
+    font-weight: 300;
+  }
+
+  /* Settings */
+  .gear-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ink-faint);
+    padding: 4px;
+    margin-left: 10px;
+    transition: color 0.2s ease;
+    line-height: 0;
+  }
+  .gear-btn:hover { color: var(--burgundy); }
+  .gear-btn.active { color: var(--forest); }
+
+  .settings {
+    margin-top: -28px;
+    margin-bottom: 32px;
+    padding: 18px 20px;
+    background: var(--cream-panel);
+    border: 1px solid var(--paper-edge);
+    box-shadow: var(--shadow);
+    display: none;
+    animation: slideIn 0.3s ease;
+  }
+  .settings.open { display: block; }
+  .settings-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    margin-bottom: 10px;
+  }
+  .settings input {
+    flex: 1;
+    background: #fff;
+    border: 1px solid var(--paper-edge);
+    color: var(--ink);
+    padding: 10px 14px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    outline: none;
+  }
+  .settings input:focus { border-color: var(--ink); }
+  .settings button {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 0 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .settings button:hover { background: var(--burgundy); }
+  .settings button.clear {
+    background: transparent;
+    color: var(--ink-faint);
+    border: 1px solid var(--paper-edge);
+  }
+  .settings button.clear:hover { color: var(--burgundy); background: rgba(107, 42, 42, 0.05); }
+  .settings-note {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 300;
+    margin-top: 2px;
+    line-height: 1.5;
+  }
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 8px;
+    padding: 2px 7px;
+    background: var(--forest);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+  .ai-badge::before {
+    content: '';
+    width: 5px; height: 5px;
+    background: #7cffaf;
+    border-radius: 50%;
+  }
+
+  .thinking-mark {
+    display: inline-block;
+    animation: thinking 1.2s ease-in-out infinite;
+  }
+  @keyframes thinking {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Tablet+ */
+  @media (min-width: 640px) {
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    }
+    .result {
+      padding: 44px 40px 36px;
+    }
+  }
+
+  /* Selection */
+  ::selection {
+    background: var(--ink);
+    color: var(--paper);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="masthead">The Card <em>Concierge</em></div>
+    <div class="edition">
+      <div class="vol">Vol. I · No. 1 <span id="aiBadge" class="ai-badge" style="display:none">AI</span></div>
+      <div id="dateline">Personal Edition</div>
+    </div>
+    <button id="gearBtn" class="gear-btn" aria-label="Settings" title="Enable AI routing">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </header>
+
+  <div class="deck">A working guide for spending well — calibrated to the cards in your wallet, the points in your account, and the meal you're about to order.</div>
+
+  <div class="settings" id="settings">
+    <div class="settings-row">
+      <input type="password" id="apiKey" placeholder="sk-ant-... (Anthropic API key, stored locally)" autocomplete="off">
+      <button id="saveKey">Save</button>
+      <button id="clearKey" class="clear">Clear</button>
+    </div>
+    <div class="settings-note">Optional. When set, unknown queries route through Claude Haiku for smart categorization. Key is stored only in this browser, never sent anywhere except api.anthropic.com.</div>
+  </div>
+
+  <div class="search-section">
+    <div class="label-bar">
+      <span class="label"><span class="num">01 ·</span> What are you buying?</span>
+      <span class="line"></span>
+    </div>
+    <div class="search-wrap">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="m20 20-3.5-3.5"/>
+      </svg>
+      <input type="text" class="search" id="search" placeholder="Sushi, gas, Amazon, a flight to Tokyo…">
+    </div>
+  </div>
+
+  <div class="label-bar">
+    <span class="label"><span class="num">02 ·</span> Pick a category</span>
+    <span class="line"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <div class="label-bar">
+    <span class="label"><span class="num">03 ·</span> The verdict</span>
+    <span class="line"></span>
+  </div>
+  <div class="result empty" id="result">
+    <div class="empty-mark">§</div>
+    <div class="empty-text">Awaiting your selection.</div>
+  </div>
+
+  <div class="colophon">
+    <span>Curated for your lineup</span>
+    <span class="ornament">❦</span>
+    <span>Points valued at ~1.5¢</span>
+  </div>
+</div>
+
+<script>
+const scenarios = [
+  {
+    id: 'dining', label: 'Dining', icon: '🍽️',
+    keywords: ['restaurant', 'restaurants', 'dinner', 'lunch', 'brunch', 'breakfast', 'food', 'sushi', 'ramen', 'cafe', 'coffee', 'starbucks', 'doordash', 'grubhub', 'ubereats', 'uber eats', 'eat', 'meal', 'pizza', 'burger', 'burgers', 'taco', 'tacos', 'burrito', 'sandwich', 'thai', 'italian', 'mexican', 'indian', 'korean', 'vietnamese', 'japanese', 'chinese', 'bbq', 'steakhouse', 'bar', 'pub', 'drinks', 'cocktail', 'cocktails', 'wine', 'beer', 'noodles', 'dim sum', 'dessert', 'ice cream', 'bakery', 'bagel', 'donut', 'boba', 'tea'],
+    pick: { card: 'Sapphire Preferred', rate: '3× UR points', value: '≈ 4.5% value' },
+    reason: 'Chase Sapphire Preferred earns three points per dollar on dining, with those points transferable to Hyatt, United, Air Canada, and others at strong redemption value. Bilt also pays 3× — choose Bilt on the first of the month, when Rent Day doubles the bonus to 6×.',
+    alts: [
+      { card: 'Bilt', rate: '3× (6× on Rent Day)' },
+      { card: 'Costco Visa', rate: '3% cashback' },
+      { card: 'Freedom Unlimited', rate: '3× UR' }
+    ]
+  },
+  {
+    id: 'groceries', label: 'Groceries', icon: '🛒',
+    keywords: ['supermarket', 'safeway', 'trader joes', 'whole foods', 'sprouts', 'grocery', 'groceries', 'produce', 'milk', 'eggs', 'vegetables', 'fruit', 'fruits', 'meat', 'fish', 'kroger', 'publix', 'wegmans', 'aldi', 'ralphs', 'lucky', 'food shopping'],
+    pick: { card: 'Citi Custom Cash', rate: '5% cashback', value: 'if top eligible category' },
+    reason: 'Custom Cash automatically pays five percent on your highest eligible spend category each billing cycle, capped at the first five hundred dollars. If groceries dominate your month, this card wins outright. Above the cap, fall back to Venture X for two miles per dollar.',
+    alts: [
+      { card: 'Venture X', rate: '2× miles' },
+      { card: 'CSP (online grocery only)', rate: '3× UR' }
+    ],
+    caveat: 'Custom Cash auto-selects each cycle. A month where dining outspends groceries will shift the 5% category.'
+  },
+  {
+    id: 'costco', label: 'Costco (in-store)', icon: '📦',
+    keywords: ['costco', 'warehouse', 'bulk'],
+    pick: { card: 'Costco Anywhere Visa', rate: '2% cashback', value: 'at warehouse' },
+    reason: 'Costco accepts only Visa — ruling out American Express and Discover entirely. Among your Visas, the Costco card itself is the highest earner inside the warehouse. The card has no annual fee with an active membership.',
+    alts: [
+      { card: 'Venture X', rate: '2× miles (also Visa)' },
+      { card: 'CSP', rate: '1× — skip' }
+    ]
+  },
+  {
+    id: 'gas', label: 'Gas', icon: '⛽',
+    keywords: ['gas', 'fuel', 'shell', 'chevron', 'exxon', 'mobil', 'bp', 'arco', 'valero', 'sunoco', 'station', 'pump', 'gasoline', 'fill up', 'fill-up'],
+    pick: { card: 'Costco Anywhere Visa', rate: '4% cashback', value: 'up to $7K/yr' },
+    reason: 'The Costco Visa pays four percent on gas at any station worldwide, including Costco itself — the highest rate in your lineup. After seven thousand dollars in yearly gas spend, the rate drops to one percent; switch to Venture X at that threshold.',
+    alts: [
+      { card: 'Custom Cash', rate: '5% if top category' },
+      { card: 'Venture X', rate: '2× miles' }
+    ]
+  },
+  {
+    id: 'flights-portal', label: 'Flights (C1 Portal)', icon: '✈️',
+    keywords: ['flight portal', 'capital one travel', 'c1 portal', 'capital one portal'],
+    pick: { card: 'Venture X', rate: '5× miles', value: '≈ 7.5% value' },
+    reason: 'Booking flights through Capital One Travel earns five miles per dollar — the second-highest rate in your wallet. The card\'s annual three-hundred-dollar travel credit also applies here, layering value on top of the bonus.',
+    alts: [
+      { card: 'CSP via Chase portal', rate: '5× UR' }
+    ]
+  },
+  {
+    id: 'flights-direct', label: 'Flights (direct)', icon: '🛫',
+    keywords: ['flight', 'flights', 'airline', 'airlines', 'plane', 'fly', 'flying', 'united', 'delta', 'american', 'southwest', 'jetblue', 'alaska', 'hawaiian', 'frontier', 'spirit', 'ana', 'singapore', 'lufthansa', 'air france', 'british airways', 'tokyo', 'paris', 'london', 'nyc', 'sfo'],
+    pick: { card: 'Sapphire Preferred', rate: '2× UR points', value: '≈ 3% value' },
+    reason: 'Direct airline bookings earn two points per dollar on the CSP, and those Ultimate Rewards transfer to United, Southwest, and Air Canada for redemptions that frequently exceed three cents per point. Venture X matches at two miles, but Chase\'s partner list is superior for domestic travel.',
+    alts: [
+      { card: 'Venture X', rate: '2× miles (different partners)' },
+      { card: 'Bilt', rate: '2× (3× on Rent Day)' }
+    ]
+  },
+  {
+    id: 'hotels-portal', label: 'Hotels (C1 Portal)', icon: '🏨',
+    keywords: ['hotel portal', 'capital one hotel', 'c1 hotel'],
+    pick: { card: 'Venture X', rate: '10× miles', value: '≈ 15% value' },
+    reason: 'Ten miles per dollar — the highest-earning category in your entire wallet. Use this for any hotel that doesn\'t require status credits or direct-booking points. Apply the three-hundred-dollar annual travel credit here to compound the value further.',
+    alts: [
+      { card: 'CSP via Chase portal', rate: '5× UR' }
+    ]
+  },
+  {
+    id: 'hotels-direct', label: 'Hotels (direct)', icon: '🛏️',
+    keywords: ['hotel', 'hotels', 'marriott', 'hyatt', 'hilton', 'airbnb', 'vrbo', 'lodging', 'inn', 'motel', 'resort', 'stay', 'booking', 'hostel'],
+    pick: { card: 'Sapphire Preferred', rate: '2× UR points', value: '≈ 3% value' },
+    reason: 'Booking direct preserves loyalty points and elite-night credits. CSP pays two points per dollar, and Ultimate Rewards transfer to Hyatt at roughly two cents per point — among the strongest redemptions in any rewards program. Bilt also transfers to Hyatt and matches the rate.',
+    alts: [
+      { card: 'Venture X', rate: '2× miles' },
+      { card: 'Bilt', rate: '2× (transfers to Hyatt)' }
+    ]
+  },
+  {
+    id: 'rent', label: 'Rent', icon: '🏠',
+    keywords: ['rent', 'landlord', 'apartment', 'lease', 'housing', 'mortgage'],
+    pick: { card: 'Bilt', rate: '1× points', value: 'fee-free' },
+    reason: 'Bilt remains the only path to earn points on rent without a processing surcharge. The base rate is modest, but transferring those points to Hyatt, American, or United produces real value. Pay rent before the first of the month to qualify for Rent Day bonuses on every other category.',
+    alts: []
+  },
+  {
+    id: 'streaming', label: 'Streaming', icon: '📺',
+    keywords: ['netflix', 'spotify', 'hulu', 'disney', 'streaming', 'youtube', 'apple music', 'apple tv', 'hbo', 'max', 'paramount', 'peacock', 'prime video', 'subscription'],
+    pick: { card: 'Custom Cash', rate: '5%', value: 'if top category' },
+    reason: 'Streaming counts as an eligible Custom Cash category, but unless your monthly streaming subscriptions exceed every other eligible spend, the card will optimize elsewhere. When that happens, Venture X is the workhorse fallback at two miles per dollar.',
+    alts: [
+      { card: 'Venture X', rate: '2× miles' }
+    ]
+  },
+  {
+    id: 'drugstore', label: 'Drugstore', icon: '💊',
+    keywords: ['cvs', 'walgreens', 'pharmacy', 'rite aid', 'drugstore', 'drug store', 'duane reade', 'prescription', 'medication', 'meds'],
+    pick: { card: 'Freedom Unlimited', rate: '3× UR points', value: '≈ 4.5% value' },
+    reason: 'Chase Freedom Unlimited earns three points per dollar at drugstores — better than any other card in your wallet for this category. Pool the points with CSP for transfer-partner redemptions when the moment is right.',
+    alts: [
+      { card: 'Custom Cash', rate: '5% if top category' },
+      { card: 'Venture X', rate: '2× miles' }
+    ]
+  },
+  {
+    id: 'online', label: 'Online / Amazon', icon: '📱',
+    keywords: ['amazon', 'online', 'ebay', 'shopping', 'walmart online', 'target online', 'etsy', 'shopify', 'online order', 'prime', 'aliexpress', 'temu', 'shein'],
+    pick: { card: 'Venture X', rate: '2× miles', value: '≈ 3% value' },
+    reason: 'Your lineup has no online-shopping specialist, so the Venture X baseline of two miles is the best available answer. Watch Chase Offers and Capital One Offers for targeted merchant promotions, which occasionally beat any flat rate.',
+    alts: [
+      { card: 'Freedom Unlimited', rate: '1.5× UR' }
+    ],
+    caveat: 'A genuine gap. If Amazon spending exceeds two thousand dollars annually, the Amazon Prime Visa earns 5% — worth considering.'
+  },
+  {
+    id: 'transit', label: 'Transit / Rideshare', icon: '🚕',
+    keywords: ['uber', 'lyft', 'transit', 'caltrain', 'bart', 'taxi', 'subway', 'parking', 'toll', 'tolls', 'rideshare', 'ride share', 'scooter', 'lime', 'bird', 'metro', 'bus', 'train', 'cab', 'muni'],
+    pick: { card: 'Sapphire Preferred', rate: '2× UR points', value: '≈ 3% value' },
+    reason: 'CSP categorizes Uber, Lyft, parking, tolls, and transit as travel, paying two points per dollar. Bilt matches at two, with the same 3× boost on Rent Day. Custom Cash will pay five percent if Select Transit happens to be your top category that month.',
+    alts: [
+      { card: 'Bilt', rate: '2× (3× Rent Day)' },
+      { card: 'Custom Cash', rate: '5% select transit if top' }
+    ]
+  },
+  {
+    id: 'utilities', label: 'Utilities / Bills', icon: '💡',
+    keywords: ['utility', 'utilities', 'electric', 'electricity', 'water', 'internet', 'wifi', 'phone', 'cell', 'cellphone', 'comcast', 'xfinity', 'verizon', 'att', 'at&t', 't-mobile', 'tmobile', 'pge', 'gas bill', 'cable', 'trash', 'sewer', 'bill', 'bills', 'monthly bill'],
+    pick: { card: 'Venture X', rate: '2× miles', value: '≈ 3% value' },
+    reason: 'No category bonus in your wallet covers utilities, so the Venture X flat rate is the best available answer. Be aware: some utility providers add a processing surcharge for credit-card payments — in those cases, the bank-transfer route is mathematically superior.',
+    alts: [
+      { card: 'Freedom Unlimited', rate: '1.5× UR' }
+    ]
+  },
+  {
+    id: 'other', label: 'Everything Else', icon: '💳',
+    keywords: ['other', 'misc', 'general', 'else'],
+    pick: { card: 'Venture X', rate: '2× miles', value: '≈ 3% value' },
+    reason: 'The Venture X is your default workhorse — two miles on every dollar of spend, with no category fine print. Freedom Unlimited\'s 1.5× rate only wins if you specifically need Chase Ultimate Rewards for a transfer partner Capital One doesn\'t share.',
+    alts: [
+      { card: 'Freedom Unlimited', rate: '1.5× UR' },
+      { card: 'Bilt', rate: '1× (3× on Rent Day)' }
+    ]
+  }
+];
+
+// Synonyms: maps common terms to category ids. Used when keyword match fails.
+const synonyms = {
+  // → other (no specialty bonus)
+  'toy': 'other', 'toys': 'other', 'kids': 'other', 'baby': 'other', 'diapers': 'other',
+  'clothing': 'other', 'clothes': 'other', 'shoes': 'other', 'apparel': 'other', 'fashion': 'other',
+  'jacket': 'other', 'shirt': 'other', 'pants': 'other', 'dress': 'other',
+  'electronics': 'other', 'laptop': 'other', 'computer': 'other', 'tv': 'other', 'television': 'other',
+  'headphones': 'other', 'iphone': 'other', 'ipad': 'other', 'camera': 'other',
+  'furniture': 'other', 'ikea': 'other', 'home goods': 'other', 'mattress': 'other',
+  'books': 'other', 'book': 'other', 'bookstore': 'other',
+  'flowers': 'other', 'gift': 'other', 'gifts': 'other',
+  'vet': 'other', 'pet': 'other', 'dog food': 'other', 'cat food': 'other', 'pets': 'other',
+  'doctor': 'other', 'dentist': 'other', 'medical': 'other', 'hospital': 'other', 'copay': 'other',
+  'haircut': 'other', 'salon': 'other', 'spa': 'other', 'barber': 'other',
+  'gym': 'other', 'fitness': 'other', 'yoga': 'other', 'peloton': 'other',
+  'movie': 'other', 'movies': 'other', 'theater': 'other', 'cinema': 'other',
+  'concert': 'other', 'tickets': 'other', 'show': 'other', 'event': 'other',
+  'home depot': 'other', 'lowes': 'other', 'hardware': 'other', 'home improvement': 'other',
+  'sports': 'other', 'equipment': 'other',
+  'best buy': 'other', 'apple store': 'other',
+  'target': 'other', 'walmart': 'other',
+  // → dining
+  'food delivery': 'dining', 'takeout': 'dining', 'restaurant week': 'dining',
+  // → groceries (raw food, ingredients)
+  'food shopping': 'groceries',
+  'chicken': 'groceries', 'beef': 'groceries', 'pork': 'groceries', 'salmon': 'groceries', 'tuna': 'groceries', 'shrimp': 'groceries',
+  'bread': 'groceries', 'rice': 'groceries', 'pasta': 'groceries', 'cheese': 'groceries', 'yogurt': 'groceries', 'butter': 'groceries',
+  'apples': 'groceries', 'bananas': 'groceries', 'oranges': 'groceries', 'berries': 'groceries', 'strawberries': 'groceries', 'lettuce': 'groceries',
+  'tomatoes': 'groceries', 'onions': 'groceries', 'potatoes': 'groceries', 'carrots': 'groceries', 'spinach': 'groceries', 'kale': 'groceries',
+  'cereal': 'groceries', 'snacks': 'groceries', 'chips': 'groceries', 'cookies': 'groceries', 'crackers': 'groceries',
+  'flour': 'groceries', 'sugar': 'groceries', 'salt': 'groceries', 'oil': 'groceries', 'olive oil': 'groceries',
+  'soda': 'groceries', 'juice': 'groceries', 'water bottle': 'groceries',
+  'ingredients': 'groceries', 'cooking': 'groceries',
+  // → gas
+  'petrol': 'gas', 'gasoline': 'gas',
+  // → transit
+  'airport ride': 'transit', 'parking lot': 'transit',
+  // → online
+  'amazon prime': 'online',
+};
+
+const grid = document.getElementById('grid');
+const result = document.getElementById('result');
+const search = document.getElementById('search');
+const dateline = document.getElementById('dateline');
+const gearBtn = document.getElementById('gearBtn');
+const settings = document.getElementById('settings');
+const apiKeyInput = document.getElementById('apiKey');
+const saveKeyBtn = document.getElementById('saveKey');
+const clearKeyBtn = document.getElementById('clearKey');
+const aiBadge = document.getElementById('aiBadge');
+let activeId = null;
+let searchDebounce = null;
+let lastAiRequest = 0;
+
+// API key handling
+function getApiKey() { return localStorage.getItem('anthropic_key') || ''; }
+function setApiKey(k) {
+  if (k) localStorage.setItem('anthropic_key', k);
+  else localStorage.removeItem('anthropic_key');
+  updateAiBadge();
+}
+function updateAiBadge() {
+  aiBadge.style.display = getApiKey() ? 'inline-flex' : 'none';
+  gearBtn.classList.toggle('active', !!getApiKey());
+}
+updateAiBadge();
+
+gearBtn.addEventListener('click', () => {
+  settings.classList.toggle('open');
+  if (settings.classList.contains('open')) {
+    apiKeyInput.value = getApiKey();
+    apiKeyInput.focus();
+  }
+});
+saveKeyBtn.addEventListener('click', () => {
+  setApiKey(apiKeyInput.value.trim());
+  settings.classList.remove('open');
+});
+clearKeyBtn.addEventListener('click', () => {
+  setApiKey('');
+  apiKeyInput.value = '';
+  aiCache = {};
+  localStorage.removeItem('ai_cache_v1');
+});
+
+// AI cache
+let aiCache = {};
+try { aiCache = JSON.parse(localStorage.getItem('ai_cache_v1') || '{}'); } catch (e) {}
+
+async function aiCategorize(term) {
+  const key = getApiKey();
+  if (!key) return null;
+  const cached = aiCache[term.toLowerCase()];
+  if (cached) return cached;
+
+  const validIds = scenarios.map(s => s.id).join(', ');
+  const prompt = `You categorize a personal purchase into a credit-card spend bucket.
+
+Valid category IDs: ${validIds}
+
+Category meanings:
+- dining: restaurants, prepared food out, food delivery
+- groceries: supermarkets, raw ingredients, food bought to cook
+- costco: at Costco warehouse
+- gas: gas stations
+- flights-portal: flights via Capital One Travel portal
+- flights-direct: flights booked directly with the airline
+- hotels-portal: hotels via Capital One Travel portal
+- hotels-direct: hotels booked directly with the hotel
+- rent: rent payment
+- streaming: streaming subscriptions (Netflix, Spotify, etc.)
+- drugstore: pharmacy / drugstore
+- online: online shopping like Amazon
+- transit: ride-share, taxis, public transit, parking, tolls
+- utilities: electric, water, internet, phone bills
+- other: anything that does not clearly fit above (clothing, electronics, gifts, medical, etc.)
+
+Purchase: "${term}"
+
+Reply with ONLY the category id, lowercase, nothing else.`;
+
+  const requestId = ++lastAiRequest;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 20,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (requestId !== lastAiRequest) return null; // stale
+    if (!res.ok) {
+      console.warn('AI route failed', res.status);
+      return null;
+    }
+    const data = await res.json();
+    const reply = (data.content?.[0]?.text || '').trim().toLowerCase();
+    const valid = scenarios.find(s => s.id === reply);
+    if (valid) {
+      aiCache[term.toLowerCase()] = valid.id;
+      try { localStorage.setItem('ai_cache_v1', JSON.stringify(aiCache)); } catch (e) {}
+      return valid.id;
+    }
+    return null;
+  } catch (e) {
+    console.warn('AI route error', e);
+    return null;
+  }
+}
+
+function showThinking(term) {
+  result.classList.remove('empty');
+  result.style.animation = 'none';
+  void result.offsetWidth;
+  result.style.animation = '';
+  result.innerHTML = `
+    <div class="pick-kicker">
+      <span class="num">№ 01</span>
+      <span class="text">Consulting the concierge<span class="thinking-mark">…</span></span>
+    </div>
+    <h2 class="pick-card" style="color:var(--ink-faint)">"${term.length > 28 ? term.slice(0,28) + '…' : term}"</h2>
+    <p class="pick-reason" style="opacity:0.6">Considering which card best serves this purchase.</p>
+  `;
+}
+
+// Set dateline
+const now = new Date();
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+dateline.textContent = months[now.getMonth()] + ' ' + now.getFullYear();
+
+function scoreScenario(scenario, query) {
+  let score = 0;
+  const q = query.toLowerCase();
+  if (scenario.label.toLowerCase().includes(q)) score += 10;
+  scenario.keywords.forEach(k => {
+    if (k === q) score += 8;
+    else if (q.includes(k)) score += k.length;
+    else if (k.includes(q) && q.length >= 3) score += q.length * 0.5;
+  });
+  return score;
+}
+
+function findBestMatch(query) {
+  const q = query.toLowerCase().trim();
+  if (!q) return null;
+
+  // Direct synonym hit
+  if (synonyms[q]) {
+    return { id: synonyms[q], confident: true };
+  }
+  // Multi-token: any token matches a synonym
+  const tokens = q.split(/\s+/);
+  for (const t of tokens) {
+    if (synonyms[t]) return { id: synonyms[t], confident: false };
+  }
+
+  // Score scenarios
+  let best = null;
+  let bestScore = 0;
+  for (const s of scenarios) {
+    const score = scoreScenario(s, q);
+    if (score > bestScore) { bestScore = score; best = s; }
+  }
+  if (best && bestScore >= 3) return { id: best.id, confident: bestScore >= 5 };
+  return null;
+}
+
+function renderGrid(filter = '') {
+  const f = filter.toLowerCase().trim();
+  const match = f ? findBestMatch(f) : null;
+
+  // Decide which categories to show in the grid
+  let visible;
+  if (!f) {
+    visible = scenarios;
+  } else {
+    visible = scenarios.filter(s =>
+      s.label.toLowerCase().includes(f) ||
+      s.keywords.some(k => k.includes(f) || f.includes(k))
+    );
+    // If no exact filter hits, show all categories so user can still browse
+    if (visible.length === 0) visible = scenarios;
+  }
+
+  grid.innerHTML = visible.map(s => `
+    <button class="cat-btn ${s.id === activeId ? 'active' : ''}" data-id="${s.id}">
+      <span class="cat-icon">${s.icon}</span>
+      <span>${s.label}</span>
+    </button>
+  `).join('');
+  grid.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => selectCategory(btn.dataset.id));
+  });
+
+  // Auto-route: if we have a confident match, select it immediately
+  if (match) {
+    selectCategory(match.id, f);
+  } else if (f && f.length >= 2) {
+    // No match — try AI if available (debounced), otherwise graceful fallback
+    if (getApiKey()) {
+      const reqTerm = filter.trim();
+      // Show fallback instantly so user sees a response, then upgrade via AI
+      renderUnknown(reqTerm);
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        if (search.value.trim() !== reqTerm) return;
+        showThinking(reqTerm);
+        aiCategorize(reqTerm).then(categoryId => {
+          if (search.value.trim() !== reqTerm) return;
+          if (categoryId && categoryId !== 'other') {
+            selectCategory(categoryId, reqTerm);
+          } else {
+            renderUnknown(reqTerm);
+          }
+        });
+      }, 450);
+    } else {
+      renderUnknown(filter.trim());
+    }
+  }
+}
+
+function renderUnknown(term) {
+  activeId = null;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  result.classList.remove('empty');
+  result.style.animation = 'none';
+  void result.offsetWidth;
+  result.style.animation = '';
+  const display = term.length > 28 ? term.slice(0, 28) + '…' : term;
+  result.innerHTML = `
+    <div class="pick-kicker">
+      <span class="num">№ 01</span>
+      <span class="text">An unspecialized purchase</span>
+    </div>
+    <h2 class="pick-card">Venture X</h2>
+    <div class="pick-rate-row">
+      <span class="pick-rate">2× miles</span>
+      <span class="pick-rate-label">≈ 3% value · the default</span>
+    </div>
+    <p class="pick-reason">Your wallet holds no category bonus tailored to <em style="color:var(--burgundy);font-weight:500">"${display}"</em>. When no specialty applies, Venture X is the workhorse — two miles on every dollar, with no fine print. Before tapping, glance at the Capital One app for any targeted merchant offers on this purchase.</p>
+    <div class="alt-section">
+      <div class="alt-header">
+        <span class="alt-label">Alternatives</span>
+        <span class="line"></span>
+      </div>
+      <div class="alt-item">
+        <span class="alt-name">Freedom Unlimited</span>
+        <span class="alt-rate">1.5× UR (Chase pool)</span>
+      </div>
+      <div class="alt-item">
+        <span class="alt-name">Custom Cash</span>
+        <span class="alt-rate">5% if this becomes your top category</span>
+      </div>
+    </div>
+  `;
+}
+
+function selectCategory(id) {
+  activeId = id;
+  const s = scenarios.find(x => x.id === id);
+  if (!s) return;
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.id === id);
+  });
+  result.classList.remove('empty');
+  // Force animation restart
+  result.style.animation = 'none';
+  void result.offsetWidth;
+  result.style.animation = '';
+  result.innerHTML = `
+    <div class="pick-kicker">
+      <span class="num">№ 01</span>
+      <span class="text">Recommended</span>
+    </div>
+    <h2 class="pick-card">${s.pick.card}</h2>
+    <div class="pick-rate-row">
+      <span class="pick-rate">${s.pick.rate}</span>
+      <span class="pick-rate-label">${s.pick.value || ''}</span>
+    </div>
+    <p class="pick-reason">${s.reason}</p>
+    ${s.caveat ? `
+      <div class="caveat">
+        <span class="caveat-mark">✻</span>
+        <span class="caveat-text">${s.caveat}</span>
+      </div>
+    ` : ''}
+    ${s.alts && s.alts.length ? `
+      <div class="alt-section">
+        <div class="alt-header">
+          <span class="alt-label">Alternatives</span>
+          <span class="line"></span>
+        </div>
+        ${s.alts.map(a => `
+          <div class="alt-item">
+            <span class="alt-name">${a.card}</span>
+            <span class="alt-rate">${a.rate}</span>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+  `;
+  // Smooth scroll on mobile
+  if (window.innerWidth < 640) {
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+search.addEventListener('input', e => renderGrid(e.target.value));
+renderGrid();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
