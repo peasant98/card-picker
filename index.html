@@ -660,24 +660,28 @@ const scenarios = [
   {
     id: 'dining', label: 'Dining', icon: '🍽️',
     keywords: ['restaurant', 'restaurants', 'dinner', 'lunch', 'brunch', 'breakfast', 'food', 'sushi', 'ramen', 'cafe', 'coffee', 'starbucks', 'doordash', 'grubhub', 'ubereats', 'uber eats', 'eat', 'meal', 'pizza', 'burger', 'burgers', 'taco', 'tacos', 'burrito', 'sandwich', 'thai', 'italian', 'mexican', 'indian', 'korean', 'vietnamese', 'japanese', 'chinese', 'bbq', 'steakhouse', 'bar', 'pub', 'drinks', 'cocktail', 'cocktails', 'wine', 'beer', 'noodles', 'dim sum', 'dessert', 'ice cream', 'bakery', 'bagel', 'donut', 'boba', 'tea'],
-    pick: { card: 'Sapphire Preferred', rate: '3× UR points', value: '≈ 4.5% value' },
-    reason: 'Chase Sapphire Preferred earns three points per dollar on dining, with those points transferable to Hyatt, United, Air Canada, and others at strong redemption value. Bilt also pays 3× — choose Bilt on the first of the month, when Rent Day doubles the bonus to 6×.',
+    pick: { card: 'Amex Gold', rate: '4× MR points', value: '≈ 6% value' },
+    reason: 'Amex Gold earns four Membership Rewards per dollar on restaurants worldwide — plus US takeout and delivery — which transfer to ANA, Aeroplane, and other airline partners at strong redemption value. Bilt comes second at 3×, but climbs to 6× on Rent Day (the first of every month). Pull Bilt on the 1st, the Gold the other thirty days.',
     alts: [
       { card: 'Bilt', rate: '3× (6× on Rent Day)' },
-      { card: 'Costco Visa', rate: '3% cashback' },
+      { card: 'Sapphire Preferred', rate: '3× UR' },
+      { card: 'Savor One', rate: '3% cashback' },
       { card: 'Freedom Unlimited', rate: '3× UR' }
-    ]
+    ],
+    caveat: 'Gold also offers a $10/mo Grubhub credit, $10/mo Uber, and a $50 semi-annual Resy credit — worth claiming on dining you would have done anyway.'
   },
   {
     id: 'groceries', label: 'Groceries', icon: '🛒',
     keywords: ['supermarket', 'safeway', 'trader joes', 'whole foods', 'sprouts', 'grocery', 'groceries', 'produce', 'milk', 'eggs', 'vegetables', 'fruit', 'fruits', 'meat', 'fish', 'kroger', 'publix', 'wegmans', 'aldi', 'ralphs', 'lucky', 'food shopping'],
-    pick: { card: 'Citi Custom Cash', rate: '5% cashback', value: 'if top eligible category' },
-    reason: 'Custom Cash automatically pays five percent on your highest eligible spend category each billing cycle, capped at the first five hundred dollars. If groceries dominate your month, this card wins outright. Above the cap, fall back to Venture X for two miles per dollar.',
+    pick: { card: 'Amex Gold', rate: '4× MR points', value: '≈ 6% value' },
+    reason: 'Amex Gold earns four Membership Rewards per dollar at US supermarkets, up to twenty-five thousand annually. Transferred to airline partners, those points clear roughly six percent in value — meaningfully ahead of Custom Cash\'s five percent flat cashback. Above the $25K cap, the rate drops to 1×; very few households will reach it.',
     alts: [
-      { card: 'Venture X', rate: '2× miles' },
+      { card: 'Custom Cash', rate: '5% if top category' },
+      { card: 'Savor One', rate: '3% cashback' },
+      { card: 'Venture X', rate: '2× miles (fallback)' },
       { card: 'CSP (online grocery only)', rate: '3× UR' }
     ],
-    caveat: 'Custom Cash auto-selects each cycle. A month where dining outspends groceries will shift the 5% category.'
+    caveat: 'Amex Gold does not work at Costco at all. It works at Walmart and Target but does not earn 4× there — those are coded as superstores, not US supermarkets. Use Costco Visa or Custom Cash in those cases.'
   },
   {
     id: 'costco', label: 'Costco (in-store)', icon: '📦',
@@ -711,10 +715,11 @@ const scenarios = [
   {
     id: 'flights-direct', label: 'Flights (direct)', icon: '🛫',
     keywords: ['flight', 'flights', 'airline', 'airlines', 'plane', 'fly', 'flying', 'united', 'delta', 'american', 'southwest', 'jetblue', 'alaska', 'hawaiian', 'frontier', 'spirit', 'ana', 'singapore', 'lufthansa', 'air france', 'british airways', 'tokyo', 'paris', 'london', 'nyc', 'sfo'],
-    pick: { card: 'Sapphire Preferred', rate: '2× UR points', value: '≈ 3% value' },
-    reason: 'Direct airline bookings earn two points per dollar on the CSP, and those Ultimate Rewards transfer to United, Southwest, and Air Canada for redemptions that frequently exceed three cents per point. Venture X matches at two miles, but Chase\'s partner list is superior for domestic travel.',
+    pick: { card: 'Amex Gold', rate: '3× MR points', value: '≈ 4.5% value' },
+    reason: 'Booked direct from the airline, Amex Gold earns three Membership Rewards per dollar — the highest direct-airline rate in your wallet. Membership Rewards transfer to ANA, Aeroplane, Singapore, and others for premium-cabin redemptions that frequently exceed three cents per point. CSP at two-times remains useful when you specifically want Chase transfer partners (Southwest, United, Hyatt for hotel transfers).',
     alts: [
-      { card: 'Venture X', rate: '2× miles (different partners)' },
+      { card: 'Sapphire Preferred', rate: '2× UR (different partners)' },
+      { card: 'Venture X', rate: '2× miles' },
       { card: 'Bilt', rate: '2× (3× on Rent Day)' }
     ]
   },
@@ -745,11 +750,22 @@ const scenarios = [
     alts: []
   },
   {
+    id: 'entertainment', label: 'Entertainment', icon: '🎭',
+    keywords: ['concert', 'concerts', 'tickets', 'show', 'shows', 'event', 'events', 'theater', 'theatre', 'movie', 'movies', 'cinema', 'broadway', 'sporting', 'sports event', 'sports tickets', 'game', 'aquarium', 'zoo', 'amusement park', 'theme park', 'museum', 'concert tickets', 'ticketmaster', 'stubhub', 'seatgeek'],
+    pick: { card: 'Savor One', rate: '3% cashback', value: '8% via C1 Entertainment' },
+    reason: 'Savor One earns three percent on entertainment broadly — concerts, theaters, sporting events, ticket vendors, even theme parks. Better still: booking directly through the Capital One Entertainment portal jumps the rate to eight percent. For one-off live events, route through that portal first.',
+    alts: [
+      { card: 'Custom Cash', rate: '5% live entertainment if top' },
+      { card: 'Venture X', rate: '2× miles' }
+    ]
+  },
+  {
     id: 'streaming', label: 'Streaming', icon: '📺',
     keywords: ['netflix', 'spotify', 'hulu', 'disney', 'streaming', 'youtube', 'apple music', 'apple tv', 'hbo', 'max', 'paramount', 'peacock', 'prime video', 'subscription'],
-    pick: { card: 'Custom Cash', rate: '5%', value: 'if top category' },
-    reason: 'Streaming counts as an eligible Custom Cash category, but unless your monthly streaming subscriptions exceed every other eligible spend, the card will optimize elsewhere. When that happens, Venture X is the workhorse fallback at two miles per dollar.',
+    pick: { card: 'Savor One', rate: '3% cashback', value: 'flat, no cap' },
+    reason: 'Savor One pays a flat three percent on most popular streaming services with no cap and no fee. Custom Cash beats it at five percent — but only if streaming happens to be your top eligible category that month, which it rarely will be against rent, groceries, and dining. Savor One is the reliable default here.',
     alts: [
+      { card: 'Custom Cash', rate: '5% if top category' },
       { card: 'Venture X', rate: '2× miles' }
     ]
   },
@@ -819,8 +835,8 @@ const synonyms = {
   'doctor': 'other', 'dentist': 'other', 'medical': 'other', 'hospital': 'other', 'copay': 'other',
   'haircut': 'other', 'salon': 'other', 'spa': 'other', 'barber': 'other',
   'gym': 'other', 'fitness': 'other', 'yoga': 'other', 'peloton': 'other',
-  'movie': 'other', 'movies': 'other', 'theater': 'other', 'cinema': 'other',
-  'concert': 'other', 'tickets': 'other', 'show': 'other', 'event': 'other',
+  'movie': 'entertainment', 'movies': 'entertainment', 'theater': 'entertainment', 'cinema': 'entertainment',
+  'concert': 'entertainment', 'tickets': 'entertainment', 'show': 'entertainment', 'event': 'entertainment',
   'home depot': 'other', 'lowes': 'other', 'hardware': 'other', 'home improvement': 'other',
   'sports': 'other', 'equipment': 'other',
   'best buy': 'other', 'apple store': 'other',
@@ -915,6 +931,7 @@ Category meanings:
 - hotels-portal: hotels via Capital One Travel portal
 - hotels-direct: hotels booked directly with the hotel
 - rent: rent payment
+- entertainment: concerts, theaters, sporting events, movies, theme parks, ticket vendors
 - streaming: streaming subscriptions (Netflix, Spotify, etc.)
 - drugstore: pharmacy / drugstore
 - online: online shopping like Amazon
